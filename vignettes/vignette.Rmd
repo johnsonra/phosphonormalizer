@@ -4,9 +4,9 @@ author: "Sohrab Saraei, Tomi Suomi, Laura L. Elo"
 date: "October 11, 2016"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Pairwise normalization of phosphoproteomics data}
-  %\VignetteEngine{knitr::rmarkdown}
-  \usepackage[utf8]{inputenc}
+    %\VignetteIndexEntry{Pairwise normalization of phosphoproteomics data}
+    %\VignetteEngine{knitr::rmarkdown}
+    \usepackage[utf8]{inputenc}
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -24,7 +24,7 @@ After finding the common phosphopeptides, the enriched/non-enriched ratios are c
 
 ## Input data
 
-In order to use phosphonormalizer package, the user needs to have both enriched and non-enriched datasets of the same samples. These datasets must have the sequence, modification and abundance columns (in that order). The sequence and modification columns must be in character format and the abundance columns should be numeric. The algorithm expects that the abundances are pre-normalized with median normalization.
+In order to use phosphonormalizer package, the user needs to have both enriched and non-enriched datasets of the same samples. These datasets must have the sequence, modification and abundance columns (in that order). The sequence and modification columns in the dataframe must be in character format and the abundance columns should be numeric. The algorithm expects that the abundances are pre-normalized with median normalization.
 
 
 ## Pairwise normalization
@@ -34,8 +34,11 @@ The normalization begins by loading the phosphonormalizer package. Here for demo
 
 
 ```{r}
+#Load the library
 library(phosphonormalizer)
+#The samples and their technical replicates
 techRep <- factor(x = c(1,1,1,2,2,2,3,3,3,4,4,4,5,5,5))
+#Call the function
 norm <- normalizePhospho(enriched.rd, non.enriched.rd, techRep = techRep)
 head(norm)
 ```

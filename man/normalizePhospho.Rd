@@ -16,15 +16,23 @@ normalizePhospho(enriched, non.enriched, phospho = NULL, techRep)
 \item{techRep}{a factor that holds information about columns order and the technical replicates of the samples}
 }
 \value{
-Normalized dataframe
+A dataframe with the normalize values
 }
 \description{
 This function compensates for the bias introduced in global phosphorylation in the sample after using median normalization.
 }
 \examples{
+#Load the library
+library(phosphonormalizer)
+#The samples and their technical replicates
 techRep <- factor(x = c(1,1,1,2,2,2,3,3,3,4,4,4,5,5,5))
-normalizePhospho(enriched.rd, non.enriched.rd, techRep = techRep)
+#Call the function
+norm <- normalizePhospho(enriched.rd, non.enriched.rd, techRep = techRep)
+head(norm)
 
+}
+\references{
+\url{http://www.nature.com/articles/srep13099}
 }
 \keyword{Mass-spectrometry}
 \keyword{Normalization,}
