@@ -1,7 +1,7 @@
 Package: phosphonormalizer
 Type: Package
 Title: Compensates for the bias introduced by median normalization in phosphoproteomics
-Version: 0.99.1
+Version: 0.99.2
 Date: 2016-11-11
 Author: Sohrab Saraei, Tomi Suomi, Otto Kauko, Laura L. Elo
 Maintainer: Sohrab Saraei <sohrab.saraei@utu.fi>
