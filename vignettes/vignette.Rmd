@@ -1,0 +1,41 @@
+---
+title: "phosphonormalizer: Pairwise normalization of phosphoproteomics data"
+author: "Sohrab Saraei, Tomi Suomi, Laura L. Elo"
+date: "October 11, 2016"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Pairwise normalization of phosphoproteomics data}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+Phosphoproteomics is identification, quantification and analysis of peptides that have phosphorylation as post-translational modification. Differential expression analysis of phosphopeptides between different samples would help study pathways and drug targets. Consequently, proper data normalization is a critical step in the workflow and median normalization is a common method that is utilized in this step of analysis. However, it is shown that global median normalization can introduce bias in the fold changes between samples. It is suggested that by taking the non-enriched data into consideration, this bias could be compensated(Kauko et al. 2015).
+
+## Algorithm overview
+
+The phosphonormalizer package tries to find phosphopeptides that are present in both enriched and non-enriched datasets with the same sequence and modification. Phosphopeptides considered in the normalization procedure must be quantified in all samples. Additionally, these phosphopeptides quantified multiple times are summed together.
+
+After finding the common phosphopeptides, the enriched/non-enriched ratios are calculated and normalized. The median of abundance ratios is used as pairwise normalization factor, which is used to normalize the enriched samples.
+
+## Input data
+
+In order to use phosphonormalizer package, the user needs to have both enriched and non-enriched datasets of the same samples. These datasets must have the sequence, modification and abundance columns (in that order). The sequence and modification columns must be in character format and the abundance columns should be numeric. The algorithm expects that the abundances are pre-normalized with median normalization.
+
+
+## Pairwise normalization
+
+The normalization begins by loading the phosphonormalizer package. Here for demonstration, the data used is from "enriched.rd" and "non.enriched.rd" are available with the package.
+
+
+
+```{r}
+library(phosphonormalizer)
+techRep <- factor(x = c(1,1,1,2,2,2,3,3,3,4,4,4,5,5,5))
+norm <- normalizePhospho(enriched.rd, non.enriched.rd, techRep = techRep)
+head(norm)
+```
