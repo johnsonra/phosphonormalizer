@@ -6,8 +6,8 @@ Date: 2016-11-11
 Author: Sohrab Saraei, Tomi Suomi, Otto Kauko, Laura L. Elo
 Maintainer: Sohrab Saraei <sohrab.saraei@utu.fi>
 Description: It uses the overlap between enriched and non-enriched datasets
-					to compensate for the bias introduced in global phosphorylation
-						after applying median normalization.
+					to compensate for the bias introduced in global 
+					phosphorylation after applying median normalization.
 biocViews: Software, StatisticalMethod, WorkflowStep, Normalization, Proteomics
 License: GPL (>= 2)
 Imports: plyr, stats, graphics
