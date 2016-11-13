@@ -1,10 +1,22 @@
 #' Pairwise Normalization of MS-based phosphoproteomic data
 #'
-#' @description  This function compensates for the bias introduced in global phosphorylation in the sample after using median normalization.
-#' @param enriched The enriched dataframe with the sequence and modifications as the first and the second column in format of charachter, followed by the samples (and possibly their technical replicates) in numeric. Note that, exactly the same column order in the non-enriched dataset must be considered. The dataset is expected to be median normalized.
-#' @param non.enriched The non-enriched dataframe with the sequence and modifications as the first and the second column in format of charachter, followed by the samples (and possibly their technical replicates) in numeric. Note that, exactly the same column order in the enriched dataset must be considered. The dataset is expected to be median normalized.
-#' @param phospho a string that shows the term that represents phosphorylation in the modification column of the data. If it is not assigned, "Phospho" will be used as the default value
-#' @param techRep a factor that holds information about columns order and the technical replicates of the samples
+#' @description  This function compensates for the bias introduced in global 
+#' phosphorylation in the sample after using median normalization.
+#' @param enriched The enriched dataframe with the sequence and modifications 
+#' as the first and the second column in format of charachter, followed by the 
+#' samples (and possibly their technical replicates) in numeric. 
+#' Note that, exactly the same column order in the non-enriched dataset 
+#' must be considered. The dataset is expected to be median normalized.
+#' @param non.enriched The non-enriched dataframe with the sequence and modifications 
+#' as the first and the second column in format of charachter, followed by the samples 
+#' (and possibly their technical replicates) in numeric. Note that, exactly the same 
+#' column order in the enriched dataset must be considered. The dataset is expected to 
+#' be median normalized.
+#' @param phospho a string that shows the term that represents phosphorylation in the 
+#' modification column of the data. If it is not assigned, "Phospho" will be used as 
+#' the default value
+#' @param techRep a factor that holds information about columns order and the technical
+#'  replicates of the samples
 #' @keywords Phosphoproteomics, Normalization, Mass-spectrometry
 #' @import plyr
 #' @importFrom stats median
@@ -26,11 +38,13 @@ normalizePhospho <- function(enriched, non.enriched, phospho = NULL, techRep)
     stopifnot(!missing(x = enriched))
     stopifnot(!missing(x = non.enriched))
     stopifnot(!missing(x = techRep))
+    
     mod = seq = NULL
+    
     if(!inherits(x = enriched[,1], what = "character") & 
-       !inherits(x = enriched[,2], what = "character") & 
-       !inherits(x = non.enriched[,1], what = "character") &
-       !inherits(x = non.enriched[,2], what = "character"))
+        !inherits(x = enriched[,2], what = "character") & 
+        !inherits(x = non.enriched[,1], what = "character") &
+        !inherits(x = non.enriched[,2], what = "character"))
         stop("The first two columns must be the sequence and modification!")
     
     if(ncol(enriched) != ncol(non.enriched))
@@ -87,6 +101,7 @@ normalizePhospho <- function(enriched, non.enriched, phospho = NULL, techRep)
     ratios <- non.enriched.mat/enriched.mat
     colnames(ratios) <- as.numeric(techRep)
     ratios.avg <- matrix(nrow = nrow(ratios), ncol = length(levels(techRep)))
+    
     for (tr in levels(techRep)) {
         ratios.avg[,as.numeric(tr)] <- rowMeans(ratios[,colnames(ratios) == levels(techRep)[as.numeric(tr)]])
     }
@@ -95,10 +110,15 @@ normalizePhospho <- function(enriched, non.enriched, phospho = NULL, techRep)
     
     for (i in 2:(ncol(ratios.avg)-1)) {
         for (j in (i+1):(ncol(ratios.avg))) {
-            max.fc <- as.numeric(unlist(apply(cbind(max.fc, 
-                                                    log2(ratios.avg[,i]) - log2(ratios.avg[,j])), 1, max), use.names = FALSE))
+            max.fc <- as.numeric(
+                unlist(
+                    apply(cbind(max.fc, log2(ratios.avg[,i]) - log2(ratios.avg[,j])),
+                          1, max),
+                    use.names = FALSE)
+            )
         }
     }
+    
     boxp <- boxplot(max.fc, plot = FALSE)
     ratios <- ratios[!(max.fc >= max(boxp$stats)),]
     

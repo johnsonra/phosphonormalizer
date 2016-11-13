@@ -7,19 +7,31 @@
 normalizePhospho(enriched, non.enriched, phospho = NULL, techRep)
 }
 \arguments{
-\item{enriched}{The enriched dataframe with the sequence and modifications as the first and the second column in format of charachter, followed by the samples (and possibly their technical replicates) in numeric. Note that, exactly the same column order in the non-enriched dataset must be considered. The dataset is expected to be median normalized.}
+\item{enriched}{The enriched dataframe with the sequence and modifications 
+as the first and the second column in format of charachter, followed by the 
+samples (and possibly their technical replicates) in numeric. 
+Note that, exactly the same column order in the non-enriched dataset 
+must be considered. The dataset is expected to be median normalized.}
 
-\item{non.enriched}{The non-enriched dataframe with the sequence and modifications as the first and the second column in format of charachter, followed by the samples (and possibly their technical replicates) in numeric. Note that, exactly the same column order in the enriched dataset must be considered. The dataset is expected to be median normalized.}
+\item{non.enriched}{The non-enriched dataframe with the sequence and modifications 
+as the first and the second column in format of charachter, followed by the samples 
+(and possibly their technical replicates) in numeric. Note that, exactly the same 
+column order in the enriched dataset must be considered. The dataset is expected to 
+be median normalized.}
 
-\item{phospho}{a string that shows the term that represents phosphorylation in the modification column of the data. If it is not assigned, "Phospho" will be used as the default value}
+\item{phospho}{a string that shows the term that represents phosphorylation in the 
+modification column of the data. If it is not assigned, "Phospho" will be used as 
+the default value}
 
-\item{techRep}{a factor that holds information about columns order and the technical replicates of the samples}
+\item{techRep}{a factor that holds information about columns order and the technical
+replicates of the samples}
 }
 \value{
 A dataframe with the normalize values
 }
 \description{
-This function compensates for the bias introduced in global phosphorylation in the sample after using median normalization.
+This function compensates for the bias introduced in global 
+phosphorylation in the sample after using median normalization.
 }
 \examples{
 #Load the library
