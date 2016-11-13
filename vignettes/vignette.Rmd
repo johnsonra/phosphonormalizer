@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Introduction
 
-Phosphoproteomics is identification, quantification and analysis of peptides that have phosphorylation as post-translational modification. Differential expression analysis of phosphopeptides between different samples would help study pathways and drug targets. Consequently, proper data normalization is a critical step in the workflow and median normalization is a common method that is utilized in this step of analysis. However, it is shown that global median normalization can introduce bias in the fold changes between samples. It is suggested that by taking the non-enriched data into consideration, this bias could be compensated(Kauko et al. 2015).
+Phosphoproteomics is identification, quantification and analysis of peptides that have phosphorylation as post-translational modification. Differential expression analysis of phosphopeptides between different samples would help study pathways and drug targets. Consequently, proper data normalization is a critical step in the workflow and median normalization is a common method that is utilized in this step of analysis. However, it is shown that global median normalization can introduce bias in the fold change of global phosphorylation between samples. It is suggested that by taking the non-enriched data into consideration, this bias could be compensated(Kauko et al. 2015).
 
 ## Algorithm overview
 

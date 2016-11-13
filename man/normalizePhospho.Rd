@@ -33,6 +33,10 @@ A dataframe with the normalize values
 This function compensates for the bias introduced in global 
 phosphorylation in the sample after using median normalization.
 }
+\details{
+It is shown that global median normalization can introduce bias in the fold change of global phosphorylation between samples. 
+It is suggested that by taking the non-enriched data into consideration, this bias could be compensated(Kauko et al. 2015).
+}
 \examples{
 #Load the library
 library(phosphonormalizer)

@@ -17,6 +17,8 @@
 #' the default value
 #' @param techRep a factor that holds information about columns order and the technical
 #'  replicates of the samples
+#' @details It is shown that global median normalization can introduce bias in the fold change of global phosphorylation between samples. 
+#' It is suggested that by taking the non-enriched data into consideration, this bias could be compensated(Kauko et al. 2015).
 #' @keywords Phosphoproteomics, Normalization, Mass-spectrometry
 #' @import plyr
 #' @importFrom stats median
