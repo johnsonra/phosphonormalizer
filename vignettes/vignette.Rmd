@@ -1,6 +1,6 @@
 ---
 title: "phosphonormalizer: Pairwise normalization of phosphoproteomics data"
-author: "Sohrab Saraei, Tomi Suomi, Laura L. Elo"
+author: "Sohrab Saraei, Tomi Suomi, Otto Kauko,Laura L. Elo"
 date: "October 11, 2016"
 output: rmarkdown::html_vignette
 vignette: >
@@ -14,17 +14,17 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Introduction
 
-Phosphoproteomics is identification, quantification and analysis of peptides that have phosphorylation as post-translational modification. Differential expression analysis of phosphopeptides between different samples would help study pathways and drug targets. Consequently, proper data normalization is a critical step in the workflow and median normalization is a common method that is utilized in this step of analysis. However, it is shown that global median normalization can introduce bias in the fold change of global phosphorylation between samples. It is suggested that by taking the non-enriched data into consideration, this bias could be compensated(Kauko et al. 2015).
+Phosphoproteomics is identification, quantification and analysis of peptides that have phosphorylation as post-translational modification. Differential expression analysis of phosphopeptides between different samples would help study pathways and drug targets. Consequently, proper data normalization is a critical step in the workflow and median normalization is a common method that is utilized in this step of analysis. However, it is shown that global median normalization can introduce bias in the fold change of global phosphorylation between samples. It is suggested that by taking the non-enriched data into consideration, this bias could be compensated (Kauko et al. 2015).
 
 ## Algorithm overview
 
-The phosphonormalizer package tries to find phosphopeptides that are present in both enriched and non-enriched datasets with the same sequence and modification. Phosphopeptides considered in the normalization procedure must be quantified in all samples. Additionally, these phosphopeptides quantified multiple times are summed together.
+The phosphonormalizer package tries to find phosphopeptides that are present in both enriched and non-enriched datasets with the same sequence and modification. Phosphopeptides considered in the normalization procedure must be quantified in all samples. Additionally, phosphopeptides quantified multiple times are summed together. Moreover, ratios with maximum fold difference more than 1.5x interquartile range will be excluded (Kauko et al. 2015). 
 
-After finding the common phosphopeptides, the enriched/non-enriched ratios are calculated and normalized. The median of abundance ratios is used as pairwise normalization factor, which is used to normalize the enriched samples.
+After finding the common phosphopeptides, the enriched/non-enriched ratios are calculated and normalized. The median of abundance ratios is used as pairwise normalization factor, which is used to normalize the enriched samples (Kauko et al. 2015).
 
 ## Input data
 
-In order to use phosphonormalizer package, the user needs to have both enriched and non-enriched datasets of the same samples. These datasets must have the sequence, modification and abundance columns (in that order). The sequence and modification columns in the dataframe must be in character format and the abundance columns should be numeric. The algorithm expects that the abundances are pre-normalized with median normalization.
+In order to use phosphonormalizer package, we assume that the experiment have been conducted on both enriched and non-enriched samples. These datasets must have the sequence, modification and abundance columns (in that order). The sequence and modification columns in the dataframe must be in character format and the abundance columns in numeric. The algorithm expects that the abundances are pre-normalized with median normalization (Kauko et al. 2015).
 
 
 ## Pairwise normalization

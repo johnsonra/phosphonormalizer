@@ -7,48 +7,52 @@
 normalizePhospho(enriched, non.enriched, phospho = NULL, techRep)
 }
 \arguments{
-\item{enriched}{The enriched dataframe with the sequence and modifications 
-as the first and the second column in format of charachter, followed by the 
-samples (and possibly their technical replicates) in numeric. 
-Note that, exactly the same column order in the non-enriched dataset 
-must be considered. The dataset is expected to be median normalized.}
-
-\item{non.enriched}{The non-enriched dataframe with the sequence and modifications 
-as the first and the second column in format of charachter, followed by the samples 
-(and possibly their technical replicates) in numeric. Note that, exactly the same 
-column order in the enriched dataset must be considered. The dataset is expected to 
-be median normalized.}
-
-\item{phospho}{a string that shows the term that represents phosphorylation in the 
-modification column of the data. If it is not assigned, "Phospho" will be used as 
-the default value}
-
-\item{techRep}{a factor that holds information about columns order and the technical
-replicates of the samples}
+    \item{enriched}{The enriched dataframe with the sequence and modifications 
+    as the first and the second column in format of charachter, followed by the 
+    samples (and possibly their technical replicates) in numeric. 
+    Note that, exactly the same column order in the non-enriched dataset 
+    must be considered. The dataset is expected to be median normalized.}
+    
+    \item{non.enriched}{The non-enriched dataframe with the sequence and modifications 
+    as the first and the second column in format of charachter, followed by the samples 
+    (and possibly their technical replicates) in numeric. Note that, exactly the same 
+    column order in the enriched dataset must be considered. The dataset is expected to 
+    be median normalized.}
+    
+    \item{phospho}{a string that shows the term that represents phosphorylation in the 
+    modification column of the data. If it is not assigned, "Phospho" will be used as 
+    the default value}
+    
+    \item{techRep}{a factor that holds information about columns order and the technical
+    replicates of the samples}
 }
 \value{
-A dataframe with the normalize values
+    A dataframe with the normalize values
+}
+\author{
+Sohrab Saraei, Tomi Suomi, Otto Kauko,Laura L. Elo 
+
+Maintainer: Sohrab Saraei <sohrab.saraei@utu.fi>
 }
 \description{
-This function compensates for the bias introduced in global 
-phosphorylation in the sample after using median normalization.
+    This function compensates for the bias introduced in global 
+    phosphorylation in the sample after using median normalization.
 }
 \details{
-It is shown that global median normalization can introduce bias in the fold change of global phosphorylation between samples. 
-It is suggested that by taking the non-enriched data into consideration, this bias could be compensated(Kauko et al. 2015).
+    It is shown that global median normalization can introduce bias in the fold change of     global phosphorylation between samples. 
+    It is suggested that by taking the non-enriched data into consideration, this bias       could be compensated (Kauko et al. 2015).
 }
 \examples{
-#Load the library
-library(phosphonormalizer)
-#The samples and their technical replicates
-techRep <- factor(x = c(1,1,1,2,2,2,3,3,3,4,4,4,5,5,5))
-#Call the function
-norm <- normalizePhospho(enriched.rd, non.enriched.rd, techRep = techRep)
-head(norm)
-
+    #Load the library
+    library(phosphonormalizer)
+    #The samples and their technical replicates
+    techRep <- factor(x = c(1,1,1,2,2,2,3,3,3,4,4,4,5,5,5))
+    #Call the function
+    norm <- normalizePhospho(enriched.rd, non.enriched.rd, techRep = techRep)
+    head(norm)
 }
 \references{
-\url{http://www.nature.com/articles/srep13099}
+    \url{http://www.nature.com/articles/srep13099}
 }
 \keyword{Mass-spectrometry}
 \keyword{Normalization,}
