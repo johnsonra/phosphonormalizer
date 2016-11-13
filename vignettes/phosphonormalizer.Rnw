@@ -59,7 +59,6 @@ library(phosphonormalizer)
 techRep <- factor(x = c(1,1,1,2,2,2,3,3,3,4,4,4,5,5,5))
 #Call the function
 norm <- normalizePhospho(enriched.rd, non.enriched.rd, techRep = techRep)
-head(norm)
 @
 
 
