@@ -1,46 +1,76 @@
-# Pairwise Normalization of MS-based phosphoproteomic data
-# Sohrab Saraei
-# This function compensates for the bias introduced in global 
-# phosphorylation in the sample after using median normalization.
+####################################################################
+## Pairwise Normalization of MS-based phosphoproteomic data       ##
+## Sohrab Saraei                                                  ##
+## This function compensates for the bias introduced in global    ##
+## phosphorylation in the sample after using median normalization.##
+####################################################################
 
-normalizePhospho <- function(enriched, non.enriched, phospho = NULL, techRep)
+normalizePhospho <- function(enriched, non.enriched, phospho = NULL, samplesCols, modseqCols, techRep)
 {
+    #Check if all the necessary arguments are present
+    if(missing(enriched)) stop("The function parameter (enriched) is missing!")
+    if(missing(non.enriched)) stop("The function parameter (non.enriched) is missing!")
+    if(missing(samplesCols)) stop("The function parameter (samplesCols) is missing!")
+    if(missing(modseqCols)) stop("The function parameter (modseqCols) is missing!")
+    if(missing(techRep)) stop("The function parameter (techRep) is missing!")
     
-    stopifnot(!missing(x = enriched))
-    stopifnot(!missing(x = non.enriched))
-    stopifnot(!missing(x = techRep))
-    stopifnot(class(enriched) == "data.frame")
-    stopifnot(class(non.enriched) == "data.frame")
-    stopifnot(class(phospho) == "character" | phospho == NULL)
-    stopifnot(class(techRep) == "factor" & (length(techRep) == unique(ncol(enriched), ncol(non.enriched)) - 2))
+    #A function that checks the types of the columns of a data.frame
+    
+    #Check the type of the arguments
+    class.dfCols <- function(df, types)
+    {
+        all(apply(df, MARGIN = 2, class) %in% types)
+    }
+    if(class(enriched) != "data.frame" & class(enriched) != "MSnSet")
+        stop("The enriched parameter must be of either types of data.frame or MSnSet")
+    
+    if(class(non.enriched) != "data.frame" & class(non.enriched) != "MSnSet")
+        stop("The non.enriched parameter must be of either types of data.frame or MSnSet")
+    
+    if(class(enriched) == "MSnSet") 
+    {
+        enriched.eset <- enriched
+        enriched <- cbind(MSnbase::fData(enriched)[, modseqCols$enriched], MSnbase::exprs(enriched)[, samplesCols$enriched])
+        non.enriched <- cbind(MSnbase::fData(non.enriched)[, modseqCols$non.enriched], MSnbase::exprs(non.enriched)[, samplesCols$non.enriched])
+        modseqCols <- data.frame(enriched = c(1,2), non.enriched = c(1,2))
+        samplesCols <- data.frame(enriched = 3:ncol(enriched), non.enriched = 3:ncol(non.enriched))
+    }
+    
+    if(!is.null(phospho) & class(phospho) != "character")
+        stop("The phospho parameter must be of type of character")
+    
+    if(class(samplesCols) != "data.frame" | 
+       ncol(samplesCols) != 2 | !class.dfCols(samplesCols, c("integer","numeric")) | 
+       all(!colnames(samplesCols) %in% c("enriched", "non.enriched")))
+        stop("The samplesCols must be data.frame with two columns, with the column names enriched and non.enriched
+             , of type numeric or integer, which must contain the column number of samples that hold the abundances")
+    
+    if(class(modseqCols) != "data.frame" | 
+       ncol(modseqCols) != 2 | !class.dfCols(modseqCols, c("integer","numeric")) | 
+       all(!colnames(modseqCols) %in% c("enriched", "non.enriched")))
+        stop("The modseqCols must be data.frame with two columns, with the names enriched and non.enriched
+             , of type numeric or integer, which must contain the column number of samples that hold the sequence 
+             and modifications of the peptides")
+    
+    if(any(!class.dfCols(enriched[, modseqCols$enriched], "character") ,
+           !class.dfCols(non.enriched[, modseqCols$non.enriched], "character")))
+        stop("The sequence and modification columns that is specified are not of type charachter!")
+    
+    if(any(!class.dfCols(enriched[, samplesCols$enriched], c("numeric", "integer")) ,
+           !class.dfCols(non.enriched[, samplesCols$non.enriched], c("numeric", "integer"))))
+        stop("The samples specified are not of type of numeric")
     
     mod = seq = NULL
-    
-    if(!inherits(x = enriched[,1], what = "character") & 
-        !inherits(x = enriched[,2], what = "character") & 
-        !inherits(x = non.enriched[,1], what = "character") &
-        !inherits(x = non.enriched[,2], what = "character"))
-        stop("The first two columns must be the sequence and modification!")
-    
-    if(ncol(enriched) != ncol(non.enriched))
-        stop("The number of columns in enriched and non.enriched is different!")
-    
-    enriched.original.mat <- as.matrix(enriched[, -c(1,2)])
-    seqMod <- enriched[, c(1,2)]
-    
-    if(!all((apply(X = enriched[, -c(1,2)], MARGIN = 2, 
-                    function(x) inherits(x = x, what = "numeric")))) &
-        !all((apply(X = non.enriched[, -c(1,2)], MARGIN = 2, 
-                    function(x) inherits(x = x, what = "numeric")))))
-        stop(paste0("Columns: 3 to ", ncol(enriched), "must be of type numeric!"))
-    
-    enriched <- enriched[apply(X = enriched[,-c(1,2)], MARGIN = 1, 
+    enriched.original.mat <- as.matrix(enriched[, samplesCols$enriched])
+    seqMod <- enriched[, modseqCols$enriched]
+    #Removing peptides with non-quantified values across the runs
+    enriched <- enriched[apply(X = enriched[ ,samplesCols$enriched], MARGIN = 1, 
                                 function(x) all(x != 0)),]
-    non.enriched <- non.enriched[apply(X = non.enriched[,-c(1,2)], MARGIN = 1, 
+    non.enriched <- non.enriched[apply(X = non.enriched[,samplesCols$non.enriched], MARGIN = 1, 
                                         function(x) all(x != 0)),]
     
-    colnames(enriched)[1:2] <- c("seq", "mod")
-    colnames(non.enriched)[1:2] <- c("seq", "mod")
+    colnames(enriched)[modseqCols$enriched] <- c("seq", "mod")
+    colnames(non.enriched)[modseqCols$non.enriched] <- c("seq", "mod")
     
     if(is.null(phospho))
     {
@@ -52,9 +82,9 @@ normalizePhospho <- function(enriched, non.enriched, phospho = NULL, techRep)
     }
     
     enriched <- plyr::ddply(enriched, plyr::.(seq, mod),
-                            function(df) apply(df[, -c(1,2)], 2, sum))
+                            function(df) apply(df[, samplesCols$enriched], 2, sum))
     non.enriched <- plyr::ddply(non.enriched, plyr::.(seq, mod),
-                                function(df) apply(df[, -c(1,2)], 2, sum))
+                                function(df) apply(df[, samplesCols$non.enriched], 2, sum))
     
     enriched[,"modSeq"] <- paste(enriched$seq, enriched$mod,sep = ", ")
     non.enriched[,"modSeq"] <- paste(non.enriched$seq, non.enriched$mod,sep = ", ")
@@ -70,8 +100,8 @@ normalizePhospho <- function(enriched, non.enriched, phospho = NULL, techRep)
     enriched.mat <- enriched.mat[order(enriched.mat$modSeq),]
     non.enriched.mat <- non.enriched.mat[order(non.enriched.mat$modSeq),]
     
-    enriched.mat <- as.matrix(enriched.mat[, -c(1,2,ncol(enriched))])
-    non.enriched.mat <- as.matrix(non.enriched.mat[, -c(1,2,ncol(enriched))])
+    enriched.mat <- as.matrix(enriched.mat[, -c(modseqCols$enriched,ncol(enriched))])
+    non.enriched.mat <- as.matrix(non.enriched.mat[, -c(modseqCols$non.enriched,ncol(enriched))])
     
     ratios <- non.enriched.mat/enriched.mat
     colnames(ratios) <- as.numeric(techRep)

@@ -24,7 +24,8 @@ After finding the common phosphopeptides, the enriched/non-enriched ratios are c
 
 ## Input data
 
-In order to use phosphonormalizer package, we assume that the experiment have been conducted on both enriched and non-enriched samples. These datasets must have the sequence, modification and abundance columns (in that order). The sequence and modification columns in the dataframe must be in character format and the abundance columns in numeric. The algorithm expects that the abundances are pre-normalized with median normalization (Kauko et al. 2015).
+In order to use phosphonormalizer package, we assume that the experiment have been conducted on both enriched and non-enriched samples. These datasets must have the sequence, modification and abundance columns. The sequence and modification columns in the dataframe must be in character format and the abundance columns in numeric. The algorithm expects that the abundances are pre-normalized with median normalization (Kauko et al. 2015). This package also supports MSnSet data type from MSnbase package which is used in data preprocessing 
+step of bioconductor mass spectrometry proteomics workflow (see more: href{https://www.bioconductor.org/help/workflows/proteomics/}{Mass spectrometry and proteomics data analysis}).
 
 
 ## Pairwise normalization
@@ -34,11 +35,17 @@ The normalization begins by loading the phosphonormalizer package. Here for demo
 
 
 ```{r}
-#Load the library
-library(phosphonormalizer)
-#The samples and their technical replicates
-techRep <- factor(x = c(1,1,1,2,2,2,3,3,3,4,4,4,5,5,5))
-#Call the function
-norm <- normalizePhospho(enriched.rd, non.enriched.rd, techRep = techRep)
-head(norm)
+    #Load the library
+    library(phosphonormalizer)
+    #Specifying the column numbers of abundances in the original data.frame, 
+    #from both enriched and non-enriched runs
+    samplesCols <- data.frame(enriched=3:17, non.enriched=3:17)
+    #Specifying the column numbers of sequence and modification in the original data.frame, 
+    #from both enriched and non-enriched runs
+    modseqCols <- data.frame(enriched = 1:2, non.enriched = 1:2)
+    #The samples and their technical replicates
+    techRep <- factor(x = c(1,1,1,2,2,2,3,3,3,4,4,4,5,5,5))
+    #Call the function
+    norm <- normalizePhospho(enriched = enriched.rd, non.enriched = non.enriched.rd, 
+            samplesCols = samplesCols, modseqCols = modseqCols, techRep = techRep)
 ```

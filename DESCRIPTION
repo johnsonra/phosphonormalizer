@@ -18,6 +18,8 @@ Imports:
 Suggests:
     knitr,
     rmarkdown
+Enhances:
+	MSnbase
 Depends:
     R (>= 3.3.0)
 VignetteBuilder: knitr
