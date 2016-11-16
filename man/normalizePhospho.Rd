@@ -65,7 +65,7 @@ Maintainer: Sohrab Saraei <sohrab.saraei@utu.fi>
     \url{http://www.nature.com/articles/srep13099}
 }
 \seealso{
-    \href{https://bioconductor.org/packages/release/bioc/html/MSnbase.html}{MSnbase}
+    \code{\link{MSnSet-class}} 
 }
 \keyword{Mass-spectrometry}
 \keyword{Normalization,}
