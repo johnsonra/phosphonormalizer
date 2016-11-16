@@ -25,7 +25,7 @@ After finding the common phosphopeptides, the enriched/non-enriched ratios are c
 ## Input data
 
 In order to use phosphonormalizer package, we assume that the experiment have been conducted on both enriched and non-enriched samples. These datasets must have the sequence, modification and abundance columns. The sequence and modification columns in the dataframe must be in character format and the abundance columns in numeric. The algorithm expects that the abundances are pre-normalized with median normalization (Kauko et al. 2015). This package also supports MSnSet data type from MSnbase package which is used in data preprocessing 
-step of bioconductor mass spectrometry proteomics workflow (see more: href{https://www.bioconductor.org/help/workflows/proteomics/}{Mass spectrometry and proteomics data analysis}).
+step of bioconductor mass spectrometry proteomics workflow (see more: https://www.bioconductor.org/help/workflows/proteomics/).
 
 
 ## Pairwise normalization
