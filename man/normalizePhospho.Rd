@@ -46,8 +46,6 @@ Maintainer: Sohrab Saraei <sohrab.saraei@utu.fi>
     It is suggested that by taking the non-enriched data into consideration, this bias could be compensated (Kauko et al. 2015).
 }
 \examples{
-    #Load the library
-    library(phosphonormalizer)
     #Specifying the column numbers of abundances in the original data.frame, 
     #from both enriched and non-enriched runs
     samplesCols <- data.frame(enriched=3:17, non.enriched=3:17)
