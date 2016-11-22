@@ -100,8 +100,8 @@ normalizePhospho <- function(enriched, non.enriched, phospho = NULL, samplesCols
     enriched.mat <- enriched.mat[order(enriched.mat$modSeq),]
     non.enriched.mat <- non.enriched.mat[order(non.enriched.mat$modSeq),]
     
-    enriched.mat <- as.matrix(enriched.mat[, -c(modseqCols$enriched,ncol(enriched))])
-    non.enriched.mat <- as.matrix(non.enriched.mat[, -c(modseqCols$non.enriched,ncol(enriched))])
+    enriched.mat <- as.matrix(enriched.mat[, -c(1,2,ncol(enriched))])
+    non.enriched.mat <- as.matrix(non.enriched.mat[, -c(1,2,ncol(enriched))])
     
     ratios <- non.enriched.mat/enriched.mat
     colnames(ratios) <- as.numeric(techRep)
