@@ -14,14 +14,16 @@ License: GPL (>= 2)
 Imports:
     plyr,
     stats,
-    graphics
+    graphics,
+    matrixStats
 Suggests:
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat
 Enhances:
 	MSnbase
 Depends:
-    R (>= 3.4.0)
+    R (>= 3.3.0)
 VignetteBuilder: knitr
 NeedsCompilation: no
 LazyData: true

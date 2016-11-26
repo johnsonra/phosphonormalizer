@@ -20,7 +20,7 @@ phosphonormalizer: Phosphoproteomics Normalization
 \end{center}
 }
 
-\author{Sohrab Saraei$^{*}$, Tomi Suomi, Otto Kauko,Laura L. Elo 
+\author{Sohrab Saraei$^{*}$, Tomi Suomi, Otto Kauko, Laura L. Elo 
 \\[1em] {\texttt{$^*$sohrab.saraei (at) utu.fi}}}
 
 \date{November 11, 2016}
@@ -52,6 +52,15 @@ step of bioconductor mass spectrometry proteomics workflow (see more: \href{http
 \section{Pairwise normalization}
 
 The normalization begins by loading the phosphonormalizer package. Here for demonstration, the data used is from "enriched.rd" and "non.enriched.rd" are available with the package (Kauko et al. 2015).
+
+\section{Installation}
+
+To install this package, start R and enter:
+<<Installation>>=
+## try http:// if https:// URLs are not supported
+source("https://bioconductor.org/biocLite.R")
+biocLite("phosphonormalizer")
+@
 
 <<Example>>=
 #Load the library

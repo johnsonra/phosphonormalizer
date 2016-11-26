@@ -32,9 +32,17 @@ step of bioconductor mass spectrometry proteomics workflow (see more: https://ww
 
 The normalization begins by loading the phosphonormalizer package. Here for demonstration, the data used is from "enriched.rd" and "non.enriched.rd" are available with the package.
 
+## Installation
+
+To install this package, start R and enter:
+```{r eval=FALSE}
+## try http:// if https:// URLs are not supported
+source("https://bioconductor.org/biocLite.R")
+biocLite("phosphonormalizer")
+```
 
 
-```{r}
+```{r eval=FALSE}
     #Load the library
     library(phosphonormalizer)
     #Specifying the column numbers of abundances in the original data.frame, 

@@ -82,9 +82,9 @@ normalizePhospho <- function(enriched, non.enriched, phospho = NULL, samplesCols
     }
     
     enriched <- plyr::ddply(enriched, plyr::.(seq, mod),
-                            function(df) apply(df[, samplesCols$enriched], 2, sum))
+                            function(df) colSums(df[, samplesCols$enriched]))
     non.enriched <- plyr::ddply(non.enriched, plyr::.(seq, mod),
-                                function(df) apply(df[, samplesCols$non.enriched], 2, sum))
+                                function(df) colSums(df[, samplesCols$non.enriched]))
     
     enriched[,"modSeq"] <- paste(enriched$seq, enriched$mod,sep = ", ")
     non.enriched[,"modSeq"] <- paste(non.enriched$seq, non.enriched$mod,sep = ", ")
@@ -115,12 +115,7 @@ normalizePhospho <- function(enriched, non.enriched, phospho = NULL, samplesCols
     
     for (i in 2:(ncol(ratios.avg)-1)) {
         for (j in (i+1):(ncol(ratios.avg))) {
-            max.fc <- as.numeric(
-                unlist(
-                    apply(cbind(max.fc, log2(ratios.avg[,i]) - log2(ratios.avg[,j])),
-                            1, max),
-                    use.names = FALSE)
-            )
+            max.fc <- matrixStats::rowMaxs(cbind(max.fc, log2(ratios.avg[,i]) - log2(ratios.avg[,j])))
         }
     }
     
@@ -131,10 +126,9 @@ normalizePhospho <- function(enriched, non.enriched, phospho = NULL, samplesCols
     
     col.sub <- rowMeans(ratios)
     
-    ratios.norm <- as.matrix(apply(ratios, 2, 
-                                    function(x) x - col.sub))
+    ratios.norm <- ratios - col.sub
     
-    factors <- 10^(apply(ratios.norm,2,median))
+    factors <- 10^(matrixStats::colMedians(ratios.norm))
     
     data.frame(seqMod, t(t(enriched.original.mat) * factors)) 
 }
