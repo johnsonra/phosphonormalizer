@@ -5,7 +5,7 @@
 ## phosphorylation in the sample after using median normalization.##
 ####################################################################
 
-normalizePhospho <- function(enriched, non.enriched, phospho = NULL, samplesCols, modseqCols, techRep)
+normalizePhospho <- function(enriched, non.enriched, phospho = NULL, samplesCols, modseqCols, techRep, plot.fc=NULL)
 {
     #Check if all the necessary arguments are present
     if(missing(enriched)) stop("The function parameter (enriched) is missing!")
@@ -19,15 +19,15 @@ normalizePhospho <- function(enriched, non.enriched, phospho = NULL, samplesCols
     #Check the type of the arguments
     class.dfCols <- function(df, types)
     {
-        all(apply(df, MARGIN = 2, class) %in% types)
+        all(apply(df, MARGIN = 2, function(x) class(x)[1]) %in% types)
     }
-    if(class(enriched) != "data.frame" & class(enriched) != "MSnSet")
+    if(!is(enriched, "data.frame") & !is(enriched, "MSnSet"))
         stop("The enriched parameter must be of either types of data.frame or MSnSet")
     
-    if(class(non.enriched) != "data.frame" & class(non.enriched) != "MSnSet")
+    if(!is(non.enriched, "data.frame") & !is(non.enriched, "MSnSet"))
         stop("The non.enriched parameter must be of either types of data.frame or MSnSet")
     
-    if(class(enriched) == "MSnSet") 
+    if(is(enriched, "MSnSet"))
     {
         enriched.eset <- enriched
         enriched <- cbind(MSnbase::fData(enriched)[, modseqCols$enriched], MSnbase::exprs(enriched)[, samplesCols$enriched])
@@ -36,16 +36,16 @@ normalizePhospho <- function(enriched, non.enriched, phospho = NULL, samplesCols
         samplesCols <- data.frame(enriched = 3:ncol(enriched), non.enriched = 3:ncol(non.enriched))
     }
     
-    if(!is.null(phospho) & class(phospho) != "character")
+    if(!is.null(phospho) & !methods::is(phospho, "character"))
         stop("The phospho parameter must be of type of character")
     
-    if(class(samplesCols) != "data.frame" | 
-       ncol(samplesCols) != 2 | !class.dfCols(samplesCols, c("integer","numeric")) | 
+    if(!methods::is(samplesCols, "data.frame") |
+       ncol(samplesCols) != 2 | !class.dfCols(samplesCols, c("integer","numeric")) |
        all(!colnames(samplesCols) %in% c("enriched", "non.enriched")))
         stop("The samplesCols must be data.frame with two columns, with the column names enriched and non.enriched
              , of type numeric or integer, which must contain the column number of samples that hold the abundances")
     
-    if(class(modseqCols) != "data.frame" | 
+    if(!methods::is(modseqCols, "data.frame") |
        ncol(modseqCols) != 2 | !class.dfCols(modseqCols, c("integer","numeric")) | 
        all(!colnames(modseqCols) %in% c("enriched", "non.enriched")))
         stop("The modseqCols must be data.frame with two columns, with the names enriched and non.enriched
@@ -102,33 +102,65 @@ normalizePhospho <- function(enriched, non.enriched, phospho = NULL, samplesCols
     
     enriched.mat <- as.matrix(enriched.mat[, -c(1,2,ncol(enriched))])
     non.enriched.mat <- as.matrix(non.enriched.mat[, -c(1,2,ncol(enriched))])
-    
-    ratios <- non.enriched.mat/enriched.mat
-    colnames(ratios) <- as.numeric(techRep)
-    ratios.avg <- matrix(nrow = nrow(ratios), ncol = length(levels(techRep)))
-    
-    for (tr in levels(techRep)) {
-        ratios.avg[,as.numeric(tr)] <- rowMeans(ratios[,colnames(ratios) == levels(techRep)[as.numeric(tr)]])
-    }
-    
-    max.fc <- log2(ratios.avg[,1]) - log2(ratios.avg[,2])
-    
-    for (i in 2:(ncol(ratios.avg)-1)) {
-        for (j in (i+1):(ncol(ratios.avg))) {
-            max.fc <- matrixStats::rowMaxs(cbind(max.fc, log2(ratios.avg[,i]) - log2(ratios.avg[,j])))
+    if(length(inter) > 1) {
+        ratios <- non.enriched.mat/enriched.mat
+
+        colnames(ratios) <- as.numeric(techRep)
+        ratios.avg <- matrix(nrow = nrow(ratios), ncol = length(levels(techRep)))
+        for (tr in levels(techRep)) {
+            if(nrow(ratios.avg) == 1) {
+                ratios.avg[,as.numeric(tr)] <- mean(ratios[,colnames(ratios) == levels(techRep)[as.numeric(tr)]])
+            } else {
+                ratios.avg[,as.numeric(tr)] <- rowMeans(ratios[,colnames(ratios) == levels(techRep)[as.numeric(tr)]])
+            }
         }
+
+
+        max.fc <- log2(ratios.avg[,1]) - log2(ratios.avg[,2])
+
+        for (i in 2:(ncol(ratios.avg)-1)) {
+            for (j in (i+1):(ncol(ratios.avg))) {
+                max.fc <- matrixStats::rowMaxs(cbind(max.fc, log2(ratios.avg[,i]) - log2(ratios.avg[,j])))
+            }
+        }
+
+        boxp <- boxplot(max.fc, plot = FALSE)
+        ratios <- ratios[!(max.fc > max(boxp$stats)),]
+
+        ratios <- log10(ratios)
+        if(methods::is(ratios, "matrix") | methods::is(ratios, "data.frame")) {
+            col.sub <- rowMeans(ratios)
+        } else {
+            col.sub <- mean(ratios)
+        }
+
+        ratios.norm <- ratios - col.sub
+
+        if(methods::is(ratios, "matrix") | methods::is(ratios, "data.frame")) {
+            factors <- 10^(matrixStats::colMedians(ratios.norm))
+        } else {
+            factors <- ratios.norm
+        }
+    } else {
+        factors <- as.numeric(non.enriched.mat/enriched.mat)
     }
-    
-    boxp <- boxplot(max.fc, plot = FALSE)
-    ratios <- ratios[!(max.fc >= max(boxp$stats)),]
-    
-    ratios <- log10(ratios)
-    
-    col.sub <- rowMeans(ratios)
-    
-    ratios.norm <- ratios - col.sub
-    
-    factors <- 10^(matrixStats::colMedians(ratios.norm))
-    
-    data.frame(seqMod, t(t(enriched.original.mat) * factors)) 
+
+    enriched.normalized.mat <- t(t(enriched.original.mat) * factors)
+    if(!is.null(plot.fc)) {
+        for(i in plot.fc$control) {
+            for(j in plot.fc$samples) {
+                a.original <- rowMeans(log2(enriched.original.mat[,which(techRep==i)]+1),na.rm=TRUE)
+                b.original <- rowMeans(log2(enriched.original.mat[,which(techRep==j)]+1),na.rm=TRUE)
+                fc.original <- a.original - b.original
+                a.normnalized <- rowMeans(log2(enriched.normalized.mat[,which(techRep==i)]+1),na.rm=TRUE)
+                b.normnalized <- rowMeans(log2(enriched.normalized.mat[,which(techRep==j)]+1),na.rm=TRUE)
+                fc.normnalized <- a.normnalized - b.normnalized
+                boxplot(cbind(fc.original, fc.normnalized), range=1.5, outline=FALSE, main=paste0("Peptide log fold changes", " (sample ", j, " vs sample ", i, ")"), names=c("Median normalized","Pairwise normalized"))
+                abline(h=0, lty=2)}
+        }
+
+    }
+    message(paste0("The number of peptides in the intersect is: ", length(inter)))
+    message(paste0(length(plot.fc$control) * length(plot.fc$samples), " plots generated. Browse through them."))
+    data.frame(seqMod, t(t(enriched.original.mat) * factors))
 }
