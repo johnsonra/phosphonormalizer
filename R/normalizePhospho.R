@@ -108,10 +108,11 @@ normalizePhospho <- function(enriched, non.enriched, phospho = NULL, samplesCols
         colnames(ratios) <- as.numeric(techRep)
         ratios.avg <- matrix(nrow = nrow(ratios), ncol = length(levels(techRep)))
         for (tr in levels(techRep)) {
+            tr_num <- techRep[techRep == tr] |> unique() |> as.numeric()
             if(nrow(ratios.avg) == 1) {
-                ratios.avg[,as.numeric(tr)] <- mean(ratios[,colnames(ratios) == levels(techRep)[as.numeric(tr)]])
+                ratios.avg[,tr_num] <- mean(ratios[,colnames(ratios) == tr_num])
             } else {
-                ratios.avg[,as.numeric(tr)] <- rowMeans(ratios[,colnames(ratios) == levels(techRep)[as.numeric(tr)]])
+                ratios.avg[,tr_num] <- rowMeans(ratios[,colnames(ratios) == tr_num])
             }
         }
 
@@ -148,12 +149,14 @@ normalizePhospho <- function(enriched, non.enriched, phospho = NULL, samplesCols
     enriched.normalized.mat <- t(t(enriched.original.mat) * factors)
     if(!is.null(plot.fc)) {
         for(i in plot.fc$control) {
+            tr_i <- as.numeric(techRep) == i
             for(j in plot.fc$samples) {
-                a.original <- rowMeans(log2(enriched.original.mat[,which(techRep==i)]+1),na.rm=TRUE)
-                b.original <- rowMeans(log2(enriched.original.mat[,which(techRep==j)]+1),na.rm=TRUE)
+                tr_j <- as.numeric(techRep) == j
+                a.original <- rowMeans(log2(enriched.original.mat[,tr_i]+1),na.rm=TRUE)
+                b.original <- rowMeans(log2(enriched.original.mat[,tr_j]+1),na.rm=TRUE)
                 fc.original <- a.original - b.original
-                a.normnalized <- rowMeans(log2(enriched.normalized.mat[,which(techRep==i)]+1),na.rm=TRUE)
-                b.normnalized <- rowMeans(log2(enriched.normalized.mat[,which(techRep==j)]+1),na.rm=TRUE)
+                a.normnalized <- rowMeans(log2(enriched.normalized.mat[,tr_i]+1),na.rm=TRUE)
+                b.normnalized <- rowMeans(log2(enriched.normalized.mat[,tr_j]+1),na.rm=TRUE)
                 fc.normnalized <- a.normnalized - b.normnalized
                 boxplot(cbind(fc.original, fc.normnalized), range=1.5, outline=FALSE, main=paste0("Peptide log fold changes", " (sample ", j, " vs sample ", i, ")"), names=c("Median normalized","Pairwise normalized"))
                 abline(h=0, lty=2)}
