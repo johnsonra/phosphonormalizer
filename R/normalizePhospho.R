@@ -119,9 +119,12 @@ normalizePhospho <- function(enriched, non.enriched, phospho = NULL, samplesCols
 
         max.fc <- log2(ratios.avg[,1]) - log2(ratios.avg[,2])
 
-        for (i in 2:(ncol(ratios.avg)-1)) {
-            for (j in (i+1):(ncol(ratios.avg))) {
-                max.fc <- matrixStats::rowMaxs(cbind(max.fc, log2(ratios.avg[,i]) - log2(ratios.avg[,j])))
+        if(ncol(ratios.avg) > 2)
+        {
+            for (i in 2:(ncol(ratios.avg)-1)) {
+                for (j in (i+1):(ncol(ratios.avg))) {
+                    max.fc <- matrixStats::rowMaxs(cbind(max.fc, log2(ratios.avg[,i]) - log2(ratios.avg[,j])))
+                }
             }
         }
 
